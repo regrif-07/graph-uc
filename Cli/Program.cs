@@ -1,4 +1,4 @@
-﻿namespace ConsoleClient;
+﻿namespace Cli;
 
 internal static class Program
 {
