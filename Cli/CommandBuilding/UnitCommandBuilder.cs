@@ -1,4 +1,5 @@
 using System.CommandLine;
+using System.CommandLine.Parsing;
 
 namespace Cli.CommandBuilding;
 
@@ -18,33 +19,11 @@ internal static class UnitCommandBuilder
 
     private static Command BuildAddCommand()
     {
-        var singleNameOption = new Option<string>(
-            name: "--single-name",
-            description: "The single name of the unit."
-        )
-        {
-            IsRequired = true,
-        };
-        var pluralNameOption = new Option<string>(
-            name: "--plural-name",
-            description: "The plural name of the unit."
-        )
-        {
-            IsRequired = true,
-        };
-        var otherNamesOption = new Option<IEnumerable<string>>(
-            name: "--other-names",
-            description: "The list of other names of the unit."
-        )
-        {
-            IsRequired = false,
-        };
-        
         var addCommand = new Command("add", "Add a unit")
         {
-            singleNameOption,
-            pluralNameOption,
-            otherNamesOption,
+            CommonOptions.SingleName("The single name of the unit", isRequired: true),
+            CommonOptions.PluralName("The plural name of the unit", isRequired: true),
+            CommonOptions.OtherNames("The list of other names of the unit")
         };
         
         return addCommand;
@@ -52,17 +31,9 @@ internal static class UnitCommandBuilder
 
     private static Command BuildDisplayCommand()
     {
-        var targetNameOption = new Option<string>(
-            name: "--target-name",
-            description: "Display a unit with a matching name."
-        )
-        {
-            IsRequired = false,
-        };
-
         var displayCommand = new Command("display", "Display all units")
         {
-            targetNameOption,
+            CommonOptions.TargetUnit("Display a unit with a matching name")
         };
         
         return displayCommand;
@@ -70,84 +41,44 @@ internal static class UnitCommandBuilder
 
     private static Command BuildUpdateCommand()
     {
-        var targetNameOption = new Option<string>(
-            name: "--target-name",
-            description: "The name of the target unit that will be updated."
-        )
-        {
-            IsRequired = true
-        };
-        var singleNameOption = new Option<string>(
-            name: "--single-name",
-            description: "The updated single name of the unit."
-        )
-        {
-            IsRequired = false,
-        };
-        var pluralNameOption = new Option<string>(
-            name: "--plural-name",
-            description: "The updated plural name of the unit."
-        )
-        {
-            IsRequired = false,
-        };
-        var otherNamesOption = new Option<IEnumerable<string>>(
-            name: "--other-names",
-            description: "The updated list of other names of the unit (will overwrite the old one)."
-        )
-        {
-            IsRequired = false,
-        };
-        var otherNamesAddOption = new Option<IEnumerable<string>>(
-            name: "--other-names-add",
-            description: "The list of other names that will be combined with existing one."
-        )
-        {
-            IsRequired = false,
-        };
-
         var updateCommand = new Command("update", "Update a unit")
         {
-            targetNameOption,
-            singleNameOption,
-            pluralNameOption,
-            otherNamesOption,
-            otherNamesAddOption,
+            CommonOptions.TargetUnit("The name of the target unit that will be updated", isRequired: true),
+            CommonOptions.SingleName("The updated single name of the unit"),
+            CommonOptions.PluralName("The updated plural name of the unit"),
+            CommonOptions.OtherNames("The updated list of other names of the unit (will overwrite the old one)"),
+            CommonOptions.OtherNamesAdd("The list of other names that will be combined with existing one")
         };
         
-        // enforce that at least one update target option is provided
-        updateCommand.AddValidator(result =>
-        {
-            var singleName = result.GetValueForOption(singleNameOption);
-            var pluralName = result.GetValueForOption(pluralNameOption);
-            var otherNames = result.GetValueForOption(otherNamesOption);
-            var otherNamesToAdd = result.GetValueForOption(otherNamesAddOption);
-
-            if (string.IsNullOrEmpty(singleName) &&
-                string.IsNullOrEmpty(pluralName) &&
-                (otherNames is null || !otherNames.Any()) &&
-                (otherNamesToAdd is null || !otherNamesToAdd.Any()))
-            {
-                result.ErrorMessage = "You must provide the data to update.";
-            }
-        });
-
+        updateCommand.AddValidator(ValidateUpdateCommand);
         return updateCommand;
+    }
+    
+    private static void ValidateUpdateCommand(CommandResult result)
+    {
+        var singleName = result.GetValueForOption(result.Command.Options.OfType<Option<string>>()
+            .First(o => o.Name == "single-name"));
+        var pluralName = result.GetValueForOption(result.Command.Options.OfType<Option<string>>()
+            .First(o => o.Name == "plural-name"));
+        var otherNames = result.GetValueForOption(result.Command.Options.OfType<Option<IEnumerable<string>>>()
+            .First(o => o.Name == "other-names"));
+        var otherNamesToAdd = result.GetValueForOption(result.Command.Options.OfType<Option<IEnumerable<string>>>()
+            .First(o => o.Name == "other-names-add"));
+
+        if (string.IsNullOrEmpty(singleName) &&
+            string.IsNullOrEmpty(pluralName) &&
+            otherNames?.Any() != true &&
+            otherNamesToAdd?.Any() != true)
+        {
+            result.ErrorMessage = "You must provide at least one field to update.";
+        }
     }
     
     private static Command BuildRemoveCommand()
     {
-        var targetNameOption = new Option<string>(
-            name: "--target-name",
-            description: "The name of the target unit that will be deleted."
-        )
-        {
-            IsRequired = true
-        };
-        
         var removeCommand = new Command("remove", "Remove a unit")
         {
-            targetNameOption,
+            CommonOptions.TargetUnit("The name of the target unit that will be deleted", isRequired: true)
         };
 
         return removeCommand;
