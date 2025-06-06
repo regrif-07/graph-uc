@@ -5,26 +5,48 @@ namespace Cli.CommandBuilding;
 internal static class CommonOptions
 {
     public static Option<string> TargetUnit(string description, bool isRequired = false) =>
-        new("--target-unit", description) { IsRequired = isRequired };
+        CreateNonEmptyStringOption("--target-unit", description, isRequired);
 
     public static Option<string> SourceUnit(string description, bool isRequired = false) =>
-        new("--source-unit", description) { IsRequired = isRequired };
+        CreateNonEmptyStringOption("--source-unit", description, isRequired);
 
     public static Option<string> SingleName(string description, bool isRequired = false) =>
-        new("--single-name", description) { IsRequired = isRequired };
+        CreateNonEmptyStringOption("--single-name", description, isRequired);
 
     public static Option<string> PluralName(string description, bool isRequired = false) =>
-        new("--plural-name", description) { IsRequired = isRequired };
+        CreateNonEmptyStringOption("--plural-name", description, isRequired);
 
     public static Option<IEnumerable<string>> OtherNames(string description, bool isRequired = false) =>
-        new("--other-names", description) { IsRequired = isRequired, AllowMultipleArgumentsPerToken = true };
+        CreateNonEmptyStringCollectionOption("--other-names", description, isRequired);
 
     public static Option<IEnumerable<string>> OtherNamesAdd(string description, bool isRequired = false) =>
-        new("--other-names-add", description) { IsRequired = isRequired, AllowMultipleArgumentsPerToken = true };
+        CreateNonEmptyStringCollectionOption("--other-names-add", description, isRequired);
 
     public static Option<string> Expression(string description, bool isRequired = false) =>
-        new("--expression", description) { IsRequired = isRequired };
+        CreateNonEmptyStringOption("--expression", description, isRequired);
 
-    public static Option<double> SourceValue(string description, bool isRequired = false) =>
-        new("--source-value", description) { IsRequired = isRequired };
+    public static Option<double> SourceValue(string description, bool isRequired = false)
+        => new("--source-value", description) { IsRequired = isRequired };
+
+    private static Option<string> CreateNonEmptyStringOption(string name, string description, bool isRequired)
+    {
+        var nonEmptyStringOption = new Option<string>(name, description) { IsRequired = isRequired };
+        nonEmptyStringOption.AddValidator(CommonValidators.EmptyStringNotAllowedValidator);
+        return nonEmptyStringOption;
+    }
+
+    private static Option<IEnumerable<string>> CreateNonEmptyStringCollectionOption(
+        string name, 
+        string description,
+        bool isRequired
+    )
+    {
+        var nonEmptyStringCollectionOption = new Option<IEnumerable<string>>(name, description)
+        {
+            IsRequired = isRequired,
+            AllowMultipleArgumentsPerToken = true
+        };
+        nonEmptyStringCollectionOption.AddValidator(CommonValidators.EmptyStringInCollectionNotAllowedValidator);
+        return nonEmptyStringCollectionOption;
+    }
 }
