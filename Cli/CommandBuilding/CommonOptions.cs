@@ -26,7 +26,7 @@ internal static class CommonOptions
         CreateNonEmptyStringOption("--expression", description, isRequired);
 
     public static Option<double> SourceValue(string description, bool isRequired = false)
-        => new("--source-value", description) { IsRequired = isRequired };
+        => CreateDoubleOption("--source-value", description, isRequired);
 
     private static Option<string> CreateNonEmptyStringOption(string name, string description, bool isRequired)
     {
@@ -48,5 +48,18 @@ internal static class CommonOptions
         };
         nonEmptyStringCollectionOption.AddValidator(CommonValidators.EmptyStringInCollectionNotAllowedValidator);
         return nonEmptyStringCollectionOption;
+    }
+
+    private static Option<double> CreateDoubleOption(string name, string description, bool isRequired)
+    {
+        return new Option<double>(
+            name,
+            CommonArgumentParsers.BuildDoubleArgumentParser(name),
+            false,
+            description
+        )
+        {
+            IsRequired = isRequired
+        };
     }
 }
