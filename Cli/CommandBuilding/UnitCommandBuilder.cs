@@ -50,28 +50,10 @@ internal static class UnitCommandBuilder
             CommonOptions.OtherNamesAdd("The list of other names that will be combined with existing one")
         };
         
-        updateCommand.AddValidator(ValidateUpdateCommand);
+        updateCommand.AddValidator(CommonValidators.BuildAtLeastOneOptionRequiredValidator(
+            ["single-name", "plural-name", "other-names", "other-names-add"]
+        ));
         return updateCommand;
-    }
-    
-    private static void ValidateUpdateCommand(CommandResult result)
-    {
-        var singleName = result.GetValueForOption(result.Command.Options.OfType<Option<string>>()
-            .First(o => o.Name == "single-name"));
-        var pluralName = result.GetValueForOption(result.Command.Options.OfType<Option<string>>()
-            .First(o => o.Name == "plural-name"));
-        var otherNames = result.GetValueForOption(result.Command.Options.OfType<Option<IEnumerable<string>>>()
-            .First(o => o.Name == "other-names"));
-        var otherNamesToAdd = result.GetValueForOption(result.Command.Options.OfType<Option<IEnumerable<string>>>()
-            .First(o => o.Name == "other-names-add"));
-
-        if (string.IsNullOrEmpty(singleName) &&
-            string.IsNullOrEmpty(pluralName) &&
-            otherNames?.Any() != true &&
-            otherNamesToAdd?.Any() != true)
-        {
-            result.ErrorMessage = "You must provide at least one field to update.";
-        }
     }
     
     private static Command BuildRemoveCommand()
