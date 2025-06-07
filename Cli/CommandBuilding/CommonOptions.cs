@@ -4,26 +4,26 @@ namespace Cli.CommandBuilding;
 
 internal static class CommonOptions
 {
-    public static Option<string> TargetUnit(string description, bool isRequired = false) =>
-        CreateNonEmptyStringOption("--target-unit", description, isRequired);
+    public static Option<string> TargetUnit(string description, bool isRequired = false) 
+        => CreateNonEmptyStringOption("--target-unit", description, isRequired);
 
-    public static Option<string> SourceUnit(string description, bool isRequired = false) =>
-        CreateNonEmptyStringOption("--source-unit", description, isRequired);
+    public static Option<string> SourceUnit(string description, bool isRequired = false) 
+        => CreateNonEmptyStringOption("--source-unit", description, isRequired);
 
-    public static Option<string> SingleName(string description, bool isRequired = false) =>
-        CreateNonEmptyStringOption("--single-name", description, isRequired);
+    public static Option<string> SingleName(string description, bool isRequired = false) 
+        => CreateNonEmptyStringOption("--single-name", description, isRequired);
 
-    public static Option<string> PluralName(string description, bool isRequired = false) =>
-        CreateNonEmptyStringOption("--plural-name", description, isRequired);
+    public static Option<string> PluralName(string description, bool isRequired = false) 
+        => CreateNonEmptyStringOption("--plural-name", description, isRequired);
 
-    public static Option<IEnumerable<string>> OtherNames(string description, bool isRequired = false) =>
-        CreateNonEmptyStringCollectionOption("--other-names", description, isRequired);
+    public static Option<IEnumerable<string>> OtherNames(string description, bool isRequired = false) 
+        => CreateNonEmptyStringCollectionOption("--other-names", description, isRequired);
 
-    public static Option<IEnumerable<string>> OtherNamesAdd(string description, bool isRequired = false) =>
-        CreateNonEmptyStringCollectionOption("--other-names-add", description, isRequired);
+    public static Option<IEnumerable<string>> OtherNamesAdd(string description, bool isRequired = false) 
+        => CreateNonEmptyStringCollectionOption("--other-names-add", description, isRequired);
 
-    public static Option<string> Expression(string description, bool isRequired = false) =>
-        CreateNonEmptyStringOption("--expression", description, isRequired);
+    public static Option<string> Expression(string description, bool isRequired = false) 
+        => CreateNonEmptyStringOption("--expression", description, isRequired);
 
     public static Option<double> SourceValue(string description, bool isRequired = false)
         => CreateDoubleOption("--source-value", description, isRequired);

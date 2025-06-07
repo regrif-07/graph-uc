@@ -19,11 +19,15 @@ internal static class UnitCommandBuilder
 
     private static Command BuildAddCommand()
     {
+        var singleNameOption = CommonOptions.SingleName("The single name of the unit", true);
+        var pluralNameOption = CommonOptions.PluralName("The plural name of the unit", true);
+        var otherNamesOption = CommonOptions.OtherNames("The list of other names of the unit");
+        
         var addCommand = new Command("add", "Add a unit")
         {
-            CommonOptions.SingleName("The single name of the unit", isRequired: true),
-            CommonOptions.PluralName("The plural name of the unit", isRequired: true),
-            CommonOptions.OtherNames("The list of other names of the unit")
+            singleNameOption,
+            pluralNameOption,
+            otherNamesOption
         };
         
         return addCommand;
@@ -31,9 +35,11 @@ internal static class UnitCommandBuilder
 
     private static Command BuildDisplayCommand()
     {
+        var targetUnitOption = CommonOptions.TargetUnit("Display a unit with a matching name");
+        
         var displayCommand = new Command("display", "Display all units")
         {
-            CommonOptions.TargetUnit("Display a unit with a matching name")
+            targetUnitOption
         };
         
         return displayCommand;
@@ -41,13 +47,19 @@ internal static class UnitCommandBuilder
 
     private static Command BuildUpdateCommand()
     {
+        var targetUnitOption = CommonOptions.TargetUnit("The name of the target unit that will be updated", true);
+        var singleNameOption = CommonOptions.SingleName("The updated single name of the unit");
+        var pluralNameOption = CommonOptions.PluralName("The updated plural name of the unit");
+        var otherNamesOption = CommonOptions.OtherNames("The updated list of other names of the unit (will overwrite the old one)");
+        var otherNamesAddOption = CommonOptions.OtherNamesAdd("The list of other names that will be combined with existing one");
+        
         var updateCommand = new Command("update", "Update a unit")
         {
-            CommonOptions.TargetUnit("The name of the target unit that will be updated", isRequired: true),
-            CommonOptions.SingleName("The updated single name of the unit"),
-            CommonOptions.PluralName("The updated plural name of the unit"),
-            CommonOptions.OtherNames("The updated list of other names of the unit (will overwrite the old one)"),
-            CommonOptions.OtherNamesAdd("The list of other names that will be combined with existing one")
+            targetUnitOption,
+            singleNameOption,
+            pluralNameOption,
+            otherNamesOption,
+            otherNamesAddOption
         };
         
         updateCommand.AddValidator(CommonValidators.BuildAtLeastOneOptionRequiredValidator(
@@ -58,9 +70,11 @@ internal static class UnitCommandBuilder
     
     private static Command BuildRemoveCommand()
     {
+        var targetUnitOption = CommonOptions.TargetUnit("The name of the target unit that will be deleted", true);
+        
         var removeCommand = new Command("remove", "Remove a unit")
         {
-            CommonOptions.TargetUnit("The name of the target unit that will be deleted", isRequired: true)
+            targetUnitOption
         };
 
         return removeCommand;

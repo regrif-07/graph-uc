@@ -17,11 +17,15 @@ internal static class ConversionCommandBuilder
 
     private static Command BuildAddCommand()
     {
+        var sourceUnitOption = CommonOptions.SourceUnit("The name of the source unit (from which the conversion is made)", true);
+        var targetUnitOption = CommonOptions.TargetUnit("The name of the target unit (to which the conversion is made)", true);
+        var expressionOption = CommonOptions.Expression("The conversion expression", true);
+        
         var addCommand = new Command("add", "Add a conversion")
         {
-            CommonOptions.SourceUnit("The name of the source unit (from which the conversion is made)", isRequired: true),
-            CommonOptions.TargetUnit("The name of the target unit (to which the conversion is made)", isRequired: true),
-            CommonOptions.Expression("The conversion expression", isRequired: true)
+            sourceUnitOption,
+            targetUnitOption,
+            expressionOption
         };
 
         return addCommand;
@@ -29,9 +33,11 @@ internal static class ConversionCommandBuilder
 
     private static Command BuildDisplayCommand()
     {
+        var targetUnitOption = CommonOptions.TargetUnit("Display all conversions from a unit with a matching name");
+        
         var displayCommand = new Command("display", "Display all conversions")
         {
-            CommonOptions.TargetUnit("Display all conversions from a unit with a matching name")
+            targetUnitOption
         };
 
         return displayCommand;
@@ -39,10 +45,13 @@ internal static class ConversionCommandBuilder
     
     private static Command BuildRemoveCommand()
     {
+        var sourceUnitOption = CommonOptions.SourceUnit("The name of the source unit (from which the conversion is made)", true);
+        var targetUnitOption = CommonOptions.TargetUnit("The name of the target unit (to which the conversion is made)", true);
+        
         var removeCommand = new Command("remove", "Remove a conversion")
         {
-            CommonOptions.SourceUnit("The name of the source unit (from which the conversion is made)", isRequired: true),
-            CommonOptions.TargetUnit("The name of the target unit (to which the conversion is made)", isRequired: true)
+            sourceUnitOption,
+            targetUnitOption
         };
 
         return removeCommand;
