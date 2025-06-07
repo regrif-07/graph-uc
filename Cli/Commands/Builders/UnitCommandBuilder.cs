@@ -1,11 +1,19 @@
 using System.CommandLine;
-using System.CommandLine.Parsing;
+using Cli.Commands.Common;
+using Cli.Commands.HandlingInterfaces;
 
-namespace Cli.CommandBuilding;
+namespace Cli.Commands.Builders;
 
-internal static class UnitCommandBuilder
+internal sealed class UnitCommandBuilder
 {
-    public static Command BuildUnitsCommand()
+    private readonly IUnitCommandHandler _unitCommandHandler;
+
+    public UnitCommandBuilder(IUnitCommandHandler unitCommandHandler)
+    {
+        _unitCommandHandler = unitCommandHandler;
+    }
+
+    public Command BuildUnitsCommand()
     {
         var unitCommand = new Command("unit", "Manage units");
         
@@ -17,7 +25,7 @@ internal static class UnitCommandBuilder
         return unitCommand;
     }
 
-    private static Command BuildAddCommand()
+    private Command BuildAddCommand()
     {
         var singleNameOption = CommonOptions.SingleName("The single name of the unit", true);
         var pluralNameOption = CommonOptions.PluralName("The plural name of the unit", true);
@@ -30,10 +38,17 @@ internal static class UnitCommandBuilder
             otherNamesOption
         };
         
+        addCommand.SetHandler(
+            _unitCommandHandler.AddCommandHandler,
+            singleNameOption,
+            pluralNameOption,
+            otherNamesOption
+        );
+        
         return addCommand;
     }
 
-    private static Command BuildDisplayCommand()
+    private Command BuildDisplayCommand()
     {
         var targetUnitOption = CommonOptions.TargetUnit("Display a unit with a matching name");
         
@@ -42,10 +57,12 @@ internal static class UnitCommandBuilder
             targetUnitOption
         };
         
+        displayCommand.SetHandler(_unitCommandHandler.DisplayCommandHandler, targetUnitOption);
+        
         return displayCommand;
     }
 
-    private static Command BuildUpdateCommand()
+    private Command BuildUpdateCommand()
     {
         var targetUnitOption = CommonOptions.TargetUnit("The name of the target unit that will be updated", true);
         var singleNameOption = CommonOptions.SingleName("The updated single name of the unit");
@@ -65,10 +82,20 @@ internal static class UnitCommandBuilder
         updateCommand.AddValidator(CommonValidators.BuildAtLeastOneOptionRequiredValidator(
             ["single-name", "plural-name", "other-names", "other-names-add"]
         ));
+        
+        updateCommand.SetHandler(
+            _unitCommandHandler.UpdateCommandHandler,
+            targetUnitOption,
+            singleNameOption,
+            pluralNameOption,
+            otherNamesOption,
+            otherNamesAddOption
+        );
+        
         return updateCommand;
     }
     
-    private static Command BuildRemoveCommand()
+    private Command BuildRemoveCommand()
     {
         var targetUnitOption = CommonOptions.TargetUnit("The name of the target unit that will be deleted", true);
         
@@ -76,6 +103,8 @@ internal static class UnitCommandBuilder
         {
             targetUnitOption
         };
+        
+        removeCommand.SetHandler(_unitCommandHandler.RemoveCommandHandler, targetUnitOption);
 
         return removeCommand;
     }

@@ -1,10 +1,19 @@
 using System.CommandLine;
+using Cli.Commands.Common;
+using Cli.Commands.HandlingInterfaces;
 
-namespace Cli.CommandBuilding;
+namespace Cli.Commands.Builders;
 
-internal static class ConvertCommandBuilder
+internal sealed class ConvertCommandBuilder
 {
-    public static Command BuildConvertCommand()
+    private readonly IConvertCommandHandler _convertCommandHandler;
+
+    public ConvertCommandBuilder(IConvertCommandHandler convertCommandHandler)
+    {
+        _convertCommandHandler = convertCommandHandler;
+    }
+
+    public Command BuildConvertCommand()
     {
         var sourceValueOption = CommonOptions.SourceValue("The numeric value of the source unit", true);
         var sourceUnitOption = CommonOptions.SourceUnit("The name of the source unit (from which the conversion is made", true);
@@ -16,6 +25,13 @@ internal static class ConvertCommandBuilder
             sourceUnitOption,
             targetUnitOption
         };
+        
+        convertCommand.SetHandler(
+            _convertCommandHandler.ConvertCommandHandler,
+            sourceValueOption,
+            sourceUnitOption,
+            targetUnitOption
+        );
 
         return convertCommand;
     }

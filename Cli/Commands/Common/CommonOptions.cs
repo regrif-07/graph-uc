@@ -1,6 +1,6 @@
 using System.CommandLine;
 
-namespace Cli.CommandBuilding;
+namespace Cli.Commands.Common;
 
 internal static class CommonOptions
 {

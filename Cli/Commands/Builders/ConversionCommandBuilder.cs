@@ -1,10 +1,19 @@
 using System.CommandLine;
+using Cli.Commands.Common;
+using Cli.Commands.HandlingInterfaces;
 
-namespace Cli.CommandBuilding;
+namespace Cli.Commands.Builders;
 
-internal static class ConversionCommandBuilder
+internal sealed class ConversionCommandBuilder
 {
-    public static Command BuildConversionCommand()
+    private readonly IConversionCommandHandler _conversionCommandHandler;
+
+    public ConversionCommandBuilder(IConversionCommandHandler conversionCommandHandler)
+    {
+        _conversionCommandHandler = conversionCommandHandler;
+    }
+
+    public Command BuildConversionCommand()
     {
         var conversionCommand = new Command("conversion", "Manage conversions");
         
@@ -15,7 +24,7 @@ internal static class ConversionCommandBuilder
         return conversionCommand;
     }
 
-    private static Command BuildAddCommand()
+    private Command BuildAddCommand()
     {
         var sourceUnitOption = CommonOptions.SourceUnit("The name of the source unit (from which the conversion is made)", true);
         var targetUnitOption = CommonOptions.TargetUnit("The name of the target unit (to which the conversion is made)", true);
@@ -27,11 +36,18 @@ internal static class ConversionCommandBuilder
             targetUnitOption,
             expressionOption
         };
+        
+        addCommand.SetHandler(
+            _conversionCommandHandler.AddCommandHandler,
+            sourceUnitOption,
+            targetUnitOption,
+            expressionOption
+        );
 
         return addCommand;
     }
 
-    private static Command BuildDisplayCommand()
+    private Command BuildDisplayCommand()
     {
         var targetUnitOption = CommonOptions.TargetUnit("Display all conversions from a unit with a matching name");
         
@@ -39,11 +55,13 @@ internal static class ConversionCommandBuilder
         {
             targetUnitOption
         };
-
+        
+        displayCommand.SetHandler(_conversionCommandHandler.DisplayCommandHandler, targetUnitOption);
+        
         return displayCommand;
     }
     
-    private static Command BuildRemoveCommand()
+    private Command BuildRemoveCommand()
     {
         var sourceUnitOption = CommonOptions.SourceUnit("The name of the source unit (from which the conversion is made)", true);
         var targetUnitOption = CommonOptions.TargetUnit("The name of the target unit (to which the conversion is made)", true);
@@ -53,6 +71,8 @@ internal static class ConversionCommandBuilder
             sourceUnitOption,
             targetUnitOption
         };
+        
+        removeCommand.SetHandler(_conversionCommandHandler.RemoveCommandHandler, sourceUnitOption, targetUnitOption);
 
         return removeCommand;
     }

@@ -1,6 +1,6 @@
 using System.CommandLine.Parsing;
 
-namespace Cli.CommandBuilding;
+namespace Cli.Commands.Common;
 
 internal static class CommonValidators
 {
