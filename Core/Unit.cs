@@ -1,16 +1,21 @@
 ﻿namespace Core;
 
-public class Unit
+public sealed class Unit
 {
     public Unit(string pluralName, string singleName, params string[] otherNames)
     {
         PluralName = pluralName;
         SingleName = singleName;
         OtherNames = otherNames.ToList();
+
+        if (AllNames.Any(string.IsNullOrWhiteSpace))
+        {
+            throw new ArgumentException("name cannot be null or empty");
+        }
     }
 
-    public string PluralName { get; set; }
-    public string SingleName { get; set; }
+    public string PluralName { get; }
+    public string SingleName { get; }
     public List<string> OtherNames { get; }
 
     public IEnumerable<string> AllNames
@@ -25,4 +30,6 @@ public class Unit
             }
         }
     }
+
+    public override string ToString() => PluralName;
 }
