@@ -27,21 +27,21 @@ internal sealed class UnitCommandBuilder
 
     private Command BuildAddCommand()
     {
-        var singleNameOption = CommonOptions.SingleName("The single name of the unit", true);
         var pluralNameOption = CommonOptions.PluralName("The plural name of the unit", true);
+        var singleNameOption = CommonOptions.SingleName("The single name of the unit", true);
         var otherNamesOption = CommonOptions.OtherNames("The list of other names of the unit");
         
         var addCommand = new Command("add", "Add a unit")
         {
-            singleNameOption,
             pluralNameOption,
+            singleNameOption,
             otherNamesOption
         };
         
         addCommand.SetHandler(
             _unitCommandHandler.AddCommandHandler,
-            singleNameOption,
             pluralNameOption,
+            singleNameOption,
             otherNamesOption
         );
         
@@ -65,16 +65,16 @@ internal sealed class UnitCommandBuilder
     private Command BuildUpdateCommand()
     {
         var targetUnitOption = CommonOptions.TargetUnit("The name of the target unit that will be updated", true);
-        var singleNameOption = CommonOptions.SingleName("The updated single name of the unit");
         var pluralNameOption = CommonOptions.PluralName("The updated plural name of the unit");
+        var singleNameOption = CommonOptions.SingleName("The updated single name of the unit");
         var otherNamesOption = CommonOptions.OtherNames("The updated list of other names of the unit (will overwrite the old one)");
         var otherNamesAddOption = CommonOptions.OtherNamesAdd("The list of other names that will be combined with existing one");
         
         var updateCommand = new Command("update", "Update a unit")
         {
             targetUnitOption,
-            singleNameOption,
             pluralNameOption,
+            singleNameOption,
             otherNamesOption,
             otherNamesAddOption
         };
@@ -86,8 +86,8 @@ internal sealed class UnitCommandBuilder
         updateCommand.SetHandler(
             _unitCommandHandler.UpdateCommandHandler,
             targetUnitOption,
-            singleNameOption,
             pluralNameOption,
+            singleNameOption,
             otherNamesOption,
             otherNamesAddOption
         );
